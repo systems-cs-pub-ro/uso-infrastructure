@@ -1,0 +1,59 @@
+- name: Clean apt cache (for Debian-based systems)
+  command: apt clean
+  when: ansible_os_family == "Debian"
+
+- name: Clean dnf cache (for RedHat systems)
+  command:
+    cmd: dnf clean all
+    warn: false
+  when: ansible_os_family == "RedHat"
+
+- name: Perform cleanup
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /root/anaconda-ks.cfg
+    - /root/original-ks.cfg
+    - /tmp
+    - /usr/share/locale
+    - /var/cache/apt
+    - /var/lib/apt/lists
+    - /var/log
+    - /var/run/utmp
+
+- name: Ensure required /var/log directories exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode:  "{{ item.mode  | default('0750') }}"
+  with_items:
+    - "{{ req_log_dirs | default([]) }}"
+
+- name: Ensure some log directories required on RedHat distributions exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - { path: "/var/log",       mode: "0755" }
+    - { path: "/var/log/audit", mode: "0700" }
+    - { path: "/var/log/sssd",  mode: "0700" }
+  when: ansible_os_family == "RedHat"
+
+- name: Fix SELinux permissions on the /var/log directory
+  shell: restorecon -RF /var/log
+  when: ansible_os_family == "RedHat"
+
+- name: Remove cloud configuration files if keeping them is not required
+  file:
+    path: /etc/cloud
+    state: absent
+  when: not (keep_cloudconf | default(false))
+
+- name: Fill in all remaining space with zeros (helps with compression)
+  shell: "dd if=/dev/zero of=/zeros bs=1M; rm /zeros"

@@ -1,0 +1,30 @@
+- name: Provision image
+  hosts: default
+  become: true
+
+  tasks:
+    - import_tasks: _common.yml
+
+    - name: Clean cloud-init artifacts
+      command:
+        cmd: cloud-init clean
+
+    - name: Purge the unnecessary packages
+      apt:
+        name:
+          - snapd
+          - linux-firmware
+          - linux-headers*
+          - cloud-init*
+        state: absent
+        purge: yes
+        autoremove: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: full
+
+    - name: Update grub configuration
+      command: update-grub2
+
+    - import_tasks: _disk_clean.yml
