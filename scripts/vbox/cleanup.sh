@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SSH_USER=${SSH_USERNAME:-ubuntu}
+SSH_USER=${SSH_USERNAME:-student}
 
 echo "==> Cleaning up tmp"
 rm -rf /tmp/*
