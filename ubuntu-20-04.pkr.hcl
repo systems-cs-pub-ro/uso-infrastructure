@@ -8,6 +8,11 @@ variable "guest_os_type" {
   default = "Ubuntu_64"
 }
 
+variable "checksum_directory" {
+  type    = string
+  default = "checksums"
+}
+
 variable "iso_url" {
   type    = string
   default = "https://releases.ubuntu.com/20.04.3/ubuntu-20.04.3-live-server-amd64.iso"
@@ -129,7 +134,7 @@ build {
   sources = ["sources.qemu.ubuntu-20-04-3"]
 
   provisioner "ansible" {
-    playbook_file = "scripts/ansible/ubuntu-22-04.yml"
+    playbook_file = "scripts/ansible/ubuntu-20-04.yml"
     user          = var.username
     use_proxy     = false
     extra_arguments = [
@@ -138,6 +143,19 @@ build {
   }
 
   post-processor "shell-local" {
-    inline = ["qemu-img snapshot -c new '${var.output_directory}/${var.vm_name}/${var.img_name}'"]
+    inline = ["rm -f ${var.checksum_directory}/${var.vm_name}.*"]
+  }
+
+  post-processor "shell-local" {
+      inline = ["qemu-img snapshot -c new '${var.output_directory}/${var.vm_name}/${var.img_name}'"]
+  }
+
+  post-processor "checksum" {
+    checksum_types = ["sha256", "sha512"]
+    output = "${var.checksum_directory}/${var.vm_name}.{{.ChecksumType}}"
+  }
+
+  post-processor "shell-local" {
+    inline = ["sed -Ei 's/${var.img_name}([^ ]*)$/${var.vm_name}.${var.disk_format}\\1/g' ${var.checksum_directory}/${var.vm_name}.*"]
   }
 }
