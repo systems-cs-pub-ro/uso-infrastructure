@@ -29,7 +29,7 @@ variable "iso_checksum_type" {
 
 variable "iso_name" {
   type    = string
-  default = "ubuntu-20.04.3-live-server-amd64.iso"
+  default = "ubuntu-22.04.3-live-server-amd64.iso"
 }
 
 variable "cpus" {
@@ -111,13 +111,13 @@ packer {
   }
 }
 
-source "virtualbox-iso" "ubuntu-20-04" {
+source "virtualbox-iso" "ubuntu-22-04" {
   guest_os_type = var.guest_os_type
   iso_url       = var.iso_url
   iso_checksum  = var.iso_checksum
   ssh_username  = var.username
   ssh_password  = var.password
-  ssh_timeout   = "30m"
+  ssh_timeout   = "50m"
    http_content = {
      "/user-data" = templatefile("scripts/autoinst/ubuntu-22-04-autoinstall.yml", {
        user = {
@@ -179,7 +179,7 @@ source "virtualbox-iso" "ubuntu-20-04" {
 }
 
 build {
-  sources = ["sources.virtualbox-iso.ubuntu-20-04"]
+  sources = ["sources.virtualbox-iso.ubuntu-22-04"]
   
   provisioner "file" {
     source      = "/home/stefan/.ssh/id_rsa.pub"
