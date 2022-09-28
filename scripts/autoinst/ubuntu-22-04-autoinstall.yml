@@ -28,7 +28,6 @@ autoinstall:
   packages:
     - htop
     - nano
-    - network-manager
     - tar
     - vim
 

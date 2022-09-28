@@ -186,22 +186,31 @@ build {
     destination = "/home/student/authorized_keys"
   }
 
-  provisioner "shell" {
-    environment_vars  = [
-      "DEBIAN_FRONTEND=noninteractive", 
-      "UPDATE=true", 
-      "SSH_USERNAME=${var.username}", 
-      "SSH_PASSWORD=${var.password}", 
-      "http_proxy=${var.http_proxy}", 
-      "https_proxy=${var.https_proxy}", 
-      "no_proxy=${var.no_proxy}"
-    ]
-    execute_command   = "echo '${var.password}'|{{ .Vars }} sudo -E -S bash '{{ .Path }}'"
-    expect_disconnect = true
-    scripts           = [
-      "scripts/vbox/update.sh", 
-      "scripts/vbox/cleanup.sh",
-      "scripts/vbox/ssh.sh"
+  provisioner "ansible" {
+    playbook_file    = "scripts/ansible/ubuntu-22-04.yml"
+    user             = var.username
+    use_proxy        = false
+    extra_arguments  = [
+      "--extra-vars", "ansible_password='${var.password}' ansible_become_pass='${var.password}'",
     ]
   }
+  
+  #provisioner "shell" {
+  #  environment_vars  = [
+  #    "DEBIAN_FRONTEND=noninteractive", 
+  #    "UPDATE=true", 
+  #    "SSH_USERNAME=${var.username}", 
+  #    "SSH_PASSWORD=${var.password}", 
+  #    "http_proxy=${var.http_proxy}", 
+  #    "https_proxy=${var.https_proxy}", 
+  #    "no_proxy=${var.no_proxy}"
+  #  ]
+  #  execute_command   = "echo '${var.password}'|{{ .Vars }} sudo -E -S bash '{{ .Path }}'"
+  #  expect_disconnect = true
+  #  scripts           = [
+  #    "scripts/vbox/update.sh", 
+  #    "scripts/vbox/cleanup.sh",
+  #    "scripts/vbox/ssh.sh"
+  #  ]
+  #}
 }

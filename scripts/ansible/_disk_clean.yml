@@ -1,12 +1,5 @@
 - name: Clean apt cache (for Debian-based systems)
   command: apt clean
-  when: ansible_os_family == "Debian"
-
-- name: Clean dnf cache (for RedHat systems)
-  command:
-    cmd: dnf clean all
-    warn: false
-  when: ansible_os_family == "RedHat"
 
 - name: Perform cleanup
   file:
@@ -31,23 +24,6 @@
     mode:  "{{ item.mode  | default('0750') }}"
   with_items:
     - "{{ req_log_dirs | default([]) }}"
-
-- name: Ensure some log directories required on RedHat distributions exist
-  file:
-    path: "{{ item.path }}"
-    state: directory
-    owner: root
-    group: root
-    mode: "{{ item.mode }}"
-  with_items:
-    - { path: "/var/log",       mode: "0755" }
-    - { path: "/var/log/audit", mode: "0700" }
-    - { path: "/var/log/sssd",  mode: "0700" }
-  when: ansible_os_family == "RedHat"
-
-- name: Fix SELinux permissions on the /var/log directory
-  shell: restorecon -RF /var/log
-  when: ansible_os_family == "RedHat"
 
 - name: Remove cloud configuration files if keeping them is not required
   file:
