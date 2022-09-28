@@ -10,11 +10,13 @@ autoinstall:
     - systemctl stop ssh
 
   apt:
-    preserve_sources_list: false
-    primary:
-      - arches: [default]
-        uri: "http://archive.ubuntu.com/ubuntu"
-    geoip: true
+      preserve_sources_list: false
+      primary:
+          - arches: [i386, amd64]
+            uri: "http://archive.ubuntu.com/ubuntu"
+          - arches: [default]
+            uri: "http://ports.ubuntu.com/ubuntu-ports"
+      geoip: true
 
   identity:
     hostname: ${hostname}.local
@@ -30,6 +32,7 @@ autoinstall:
     - nano
     - tar
     - vim
+    - ubuntu-desktop-minimal
 
   user-data:
     disable_root: true
