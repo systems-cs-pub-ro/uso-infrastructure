@@ -15,7 +15,7 @@ variable "iso_url" {
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:5035be37a7e9abbdc09f0d257f3e33416c1a0fb322ba860d42d74aa75c3468d4"
+  default = "sha256:10f19c5b2b8d6db711582e0e27f5116296c34fe4b313ba45f9b201a5007056cb"
 }
 
 variable "iso_name" {
@@ -88,7 +88,7 @@ source "virtualbox-iso" "ubuntu-22-04" {
   iso_checksum  = var.iso_checksum
   ssh_username  = var.username
   ssh_password  = var.password
-  ssh_timeout   = "50m"
+  ssh_timeout   = "30m"
    http_content = {
      "/user-data" = templatefile("scripts/autoinst/ubuntu-22-04-autoinstall.yml", {
        user = {
@@ -99,10 +99,10 @@ source "virtualbox-iso" "ubuntu-22-04" {
      }),
      "/meta-data" = ""
    }
-  shutdown_command     = "echo '${var.password}' | sudo -S poweroff"
+  shutdown_command     = "rm -rf ~/.ansible && echo '${var.password}' | sudo -S poweroff"
   disk_size            = var.disk_size
   vm_name              = "${var.img_name}"
-  format               = "ova"
+  format               = var.format
   cpus                 = var.cpus
   memory               = var.memsize
   headless             = var.headless
@@ -119,11 +119,27 @@ source "virtualbox-iso" "ubuntu-22-04" {
     ["modifyvm", "{{ .Name }}", "--cpus", "${var.cpus}"]
   ]
 
-  boot_command = [
-    "<enter><enter><f6><esc><wait> ",
-    "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-    "<wait><enter><wait>"
-  ]
+  # boot_command = [
+  #   "<enter><enter><f6><esc><wait> ",
+  #   "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+  #   "<wait><enter><wait>"
+  # ]
+
+  # boot_command = [
+  #   "c<wait> ",
+  #   "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+  #   "<wait><enter><wait>"
+  # ]
+
+  # boot_command = [
+  #   "c<wait>",
+  #   "linux /casper/vmlinuz --- autoinstall ds=\"nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/\"",
+  #   "<enter><wait>",
+  #   "initrd /casper/initrd",
+  #   "<enter><wait>",
+  #   "boot",
+  #   "<enter>"
+  # ]
 
   boot_wait = "5s"
 }
