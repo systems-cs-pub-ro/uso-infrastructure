@@ -25,7 +25,7 @@ variable "iso_name" {
 
 variable "cpus" {
   type    = number
-  default = 2
+  default = 1
 }
 
 variable "memsize" {
@@ -119,27 +119,15 @@ source "virtualbox-iso" "ubuntu-22-04" {
     ["modifyvm", "{{ .Name }}", "--cpus", "${var.cpus}"]
   ]
 
-  # boot_command = [
-  #   "<enter><enter><f6><esc><wait> ",
-  #   "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-  #   "<wait><enter><wait>"
-  # ]
-
-  # boot_command = [
-  #   "c<wait> ",
-  #   "autoinstall ds=nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-  #   "<wait><enter><wait>"
-  # ]
-
-  # boot_command = [
-  #   "c<wait>",
-  #   "linux /casper/vmlinuz --- autoinstall ds=\"nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/\"",
-  #   "<enter><wait>",
-  #   "initrd /casper/initrd",
-  #   "<enter><wait>",
-  #   "boot",
-  #   "<enter>"
-  # ]
+   boot_command = [
+     "c<wait>",
+     "linux /casper/vmlinuz --- autoinstall ds=\"nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/\"",
+     "<enter><wait>",
+     "initrd /casper/initrd",
+     "<enter><wait>",
+     "boot",
+     "<enter>"
+   ]
 
   boot_wait = "5s"
 }
