@@ -27,23 +27,26 @@
     - name: Update grub configuration
       command: update-grub2
 
-    #- name: Configure Git
-      #command:
-      #with_items:
-      #- git config --global color.ui auto
-      #- git config --global user.name 'Student USO VM User'
-      #- git config --global user.email 'student@stud.acs.upb.ro'
+    - name: Configure Git
+      shell: |
+        git config --global color.ui auto
+        git config --global user.name 'Student USO VM User'
+        git config --global user.email 'student@stud.acs.upb.ro'
 
-    - name: Clone Scripts and Configs in Documents/
+    - name: Clone Razvan's scripts and configs in the Documents folder
       command:
         cmd: git clone https://github.com/razvand/snippets /home/student/Documents/snippets.git
 
-    #- name: Add aditional Vim configuration
-      #command:
-      #with_items:
-      #- mkdir -p /home/student/.vim/bkup
-      #- cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /home/student/.vimrc
-      #- cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /home/student/.vim/
+    - name: Make Vim default editor
+      command:
+        cmd: update-alternatives --set editor /usr/bin/vim.basic
+
+    - name: Add aditional Vim configuration
+      shell: |
+        cp /usr/share/vim/vim81/vimrc_example.vim /etc/vim/vimrc
+        mkdir -p /home/student/.vim/bkup
+        cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /home/student/.vimrc
+        cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /home/student/.vim/
 
     - name: Add aditional Emacs configuration
       command:

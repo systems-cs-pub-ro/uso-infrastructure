@@ -1,3 +1,8 @@
+- name: Set resolv.conf file
+  copy:
+    content: "nameserver 1.1.1.1"
+    dest: /etc/resolv.conf
+
 - name: Give the user sudo without password privileges
   lineinfile:
     path: /etc/sudoers

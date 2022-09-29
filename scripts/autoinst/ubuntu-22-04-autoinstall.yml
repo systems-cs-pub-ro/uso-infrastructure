@@ -36,6 +36,7 @@ autoinstall:
     - emacs
     - gcc-multilib
     - ubuntu-desktop-minimal
+    - tmux
 
   user-data:
     disable_root: true

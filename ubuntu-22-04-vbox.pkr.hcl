@@ -25,7 +25,7 @@ variable "iso_name" {
 
 variable "cpus" {
   type    = number
-  default = 2
+  default = 1
 }
 
 variable "memsize" {
@@ -38,7 +38,7 @@ variable "disk_size" {
   default = 20000
 }
 
-variable "format" {
+variable "disk_format" {
   type    = string
   default = "ova"
 }
@@ -73,6 +73,12 @@ variable "output_directory" {
   default = "output"
 }
 
+variable "checksum_directory" {
+  type    = string
+  default = "checksums"
+}
+
+
 packer {
   required_plugins {
     virtualbox = {
@@ -102,7 +108,7 @@ source "virtualbox-iso" "ubuntu-22-04" {
   shutdown_command     = "rm -rf ~/.ansible && echo '${var.password}' | sudo -S poweroff"
   disk_size            = var.disk_size
   vm_name              = "${var.img_name}"
-  format               = var.format
+  format               = var.disk_format
   cpus                 = var.cpus
   memory               = var.memsize
   headless             = var.headless
@@ -110,11 +116,16 @@ source "virtualbox-iso" "ubuntu-22-04" {
   virtualbox_version_file = ".vbox_version"
   output_directory     = var.output_directory
   vboxmanage = [
-    ["modifyvm", "{{ .Name }}", "--audio", "none"],
-    ["modifyvm", "{{ .Name }}", "--usb", "off"],
-    ["modifyvm", "{{ .Name }}", "--vram", "12"],
+    ["modifyvm", "{{ .Name }}", "--audio", "pulse"],
+    ["modifyvm", "{{ .Name }}", "--pae", "off"],
+    ["modifyvm", "{{ .Name }}", "--usb", "on"],
+    ["modifyvm", "{{ .Name }}", "--vram", "128"],
     ["modifyvm", "{{ .Name }}", "--vrde", "off"],
-    ["modifyvm", "{{ .Name }}", "--nictype1", "virtio"],
+    ["modifyvm", "{{ .Name }}", "--nic1", "nat"],
+    ["modifyvm", "{{ .Name }}", "--nictype1", "82540EM"],
+    ["modifyvm", "{{ .Name }}", "--nic2", "hostonly"],    
+    ["modifyvm", "{{ .Name }}", "--nictype2", "82540EM"],
+    ["modifyvm", "{{ .Name }}", "--hostonlyadapter2", "vboxnet0"],
     ["modifyvm", "{{ .Name }}", "--memory", "${var.memsize}"],
     ["modifyvm", "{{ .Name }}", "--cpus", "${var.cpus}"]
   ]
@@ -142,5 +153,14 @@ build {
     extra_arguments  = [
       "--extra-vars", "ansible_password='${var.password}' ansible_become_pass='${var.password}'",
     ]
+  }
+
+  post-processor "shell-local" {
+    inline = ["rm -f ${var.checksum_directory}/${var.img_name}.*"]
+  }
+
+  post-processor "checksum" {
+    checksum_types = ["sha256", "sha512"]
+    output = "${var.checksum_directory}/${var.img_name}.{{.ChecksumType}}"
   }
 }
