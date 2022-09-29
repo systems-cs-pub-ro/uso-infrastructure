@@ -32,6 +32,9 @@ autoinstall:
     - nano
     - tar
     - vim
+    - git
+    - emacs
+    - gcc-multilib
     - ubuntu-desktop-minimal
 
   user-data:

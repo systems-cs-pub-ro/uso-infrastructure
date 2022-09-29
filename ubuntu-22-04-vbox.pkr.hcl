@@ -25,7 +25,7 @@ variable "iso_name" {
 
 variable "cpus" {
   type    = number
-  default = 1
+  default = 2
 }
 
 variable "memsize" {
