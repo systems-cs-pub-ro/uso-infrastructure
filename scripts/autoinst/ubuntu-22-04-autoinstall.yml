@@ -37,6 +37,7 @@ autoinstall:
     - gcc-multilib
     - ubuntu-desktop-minimal
     - tmux
+    - firefox
 
   user-data:
     disable_root: true
