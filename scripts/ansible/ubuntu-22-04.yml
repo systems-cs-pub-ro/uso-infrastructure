@@ -53,7 +53,7 @@
 
     - name: Configure Vim globally
       command:
-        cmd: cp /usr/share/vim/vim80/vimrc_example.vim /etc/vim/vimrc
+        cmd: cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /etc/vim/vimrc
 
     - name: Add aditional Vim configuration
       become: yes
@@ -105,16 +105,29 @@
 
     # TODO - Install stuff https://github.com/cs-pub-ro/lab-infrastructure/blob/master/install/uso-vm-actions.txt#L47-L53
 
+    - name: Install minimal CLI Debian packages
+      command:
+        cmd: bash /home/student/Documents/snippets.git/debian/cli-minimal-debian-install
+
+    - name: Install minimal GUI Debian packages
+      command:
+        cmd: bash /home/student/Documents/snippets.git/debian/gui-minimal-debian-install
+
+    - name: Disable automated screen locking
+      shell: |
+        dpkg --add-architecture i386
+        apt install libc6:i386
+
     - name: Add tmux configuration
       become: yes
       become_user: student
       command:
         cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf ~/.tmux.conf
-    
+
     - name: Add tmux configuration Root -
-      command:   
+      command:
         cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf /root/.tmux.conf
-    
+
     - name: Update root password
       user:
         name: root
@@ -132,7 +145,7 @@
 
     - name: Disable automated screen locking
       become: yes
-      become_user: student      
+      become_user: student
       shell: |
         gsettings set org.gnome.desktop.screensaver lock-enabled false
         gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend false
@@ -159,7 +172,7 @@
 
     - name: Clone USO repository
       become: yes
-      become_user: student    
+      become_user: student
       command:
         cmd: git clone https://github.com/systems-cs-pub-ro/uso-lab uso-lab.git
 
