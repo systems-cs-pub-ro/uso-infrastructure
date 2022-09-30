@@ -130,11 +130,6 @@ source "virtualbox-iso" "ubuntu-20-04" {
 
 build {
   sources = ["sources.virtualbox-iso.ubuntu-20-04"]
-  
-  provisioner "file" {
-    source      = "/home/andreia/.ssh/id_ed25519.pub"
-    destination = "/home/student/authorized_keys"
-  }
 
   provisioner "ansible" {
     playbook_file    = "scripts/ansible/ubuntu-20-04.yml"
