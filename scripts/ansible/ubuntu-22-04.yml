@@ -66,8 +66,8 @@
     - name: Add aditional Vim configuration Root -
       shell: |
         mkdir -p /root/.vim/bkup
-        cp ~/Documents/snippets.git/config/vim/vimrc_no_cscope /root/.vimrc
-        cp -r ~/Documents/snippets.git/config/vim/ftplugin/ /root/.vim/
+        cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /root/.vimrc
+        cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /root/.vim/
 
     - name: Add aditional Emacs configuration
       become: yes
@@ -77,13 +77,7 @@
 
     - name: Add aditional Emacs configuration Root -
       command:
-        cmd: cp ~/Documents/snippets.git/config/emacs/emacs-to-deploy.el /root/.emacs
-
-    - name: Disable cursor blinking in terminal
-      become: yes
-      become_user: student
-      command:
-        cmd: gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d \')/ cursor-blink-mode off
+        cmd: cp /home/student/Documents/snippets.git/config/emacs/emacs-to-deploy.el /root/.emacs
 
     - name: Set collation to show capitalized names first
       command:
@@ -97,36 +91,40 @@
     
     - name: Add aditional Bash aliases Root -
       command:
-        cmd: cp ~/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd /root/.bash_aliases
+        cmd: cp /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd /root/.bash_aliases
 
     - name: Trim Bash prompt when too large
       command:
         cmd: echo -e '\nexport PROMPT_DIRTRIM=3' >> /etc/bash.bashrc
-
-    # TODO - Install stuff https://github.com/cs-pub-ro/lab-infrastructure/blob/master/install/uso-vm-actions.txt#L47-L53
 
     - name: Install minimal CLI Debian packages
       command:
         cmd: bash /home/student/Documents/snippets.git/debian/cli-minimal-debian-install
 
     - name: Install minimal GUI Debian packages
-      command:
-        cmd: bash /home/student/Documents/snippets.git/debian/gui-minimal-debian-install
+      apt:
+        pkg:
+          - xsel
+          - xclip
+          - scrot
+          - shutter
+        state: latest
+        update_cache: true
 
-    - name: Disable automated screen locking
+    - name: Install i386 C development environment
       shell: |
         dpkg --add-architecture i386
-        apt install libc6:i386
+        apt install -y libc6:i386
 
     - name: Add tmux configuration
       become: yes
       become_user: student
       command:
-        cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf ~/.tmux.conf
+        cmd: cp /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf /home/student/.tmux.conf
 
     - name: Add tmux configuration Root -
       command:
-        cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf /root/.tmux.conf
+        cmd: cp /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf /root/.tmux.conf
 
     - name: Update root password
       user:
@@ -182,12 +180,12 @@
       shell: |
         history -c
         unset HISTFILE
-        rm -f ~/.bash_history
+        rm -f /home/student/bash_history
  
     - name: Clean command history Root -
       shell: |
         history -c
         unset HISTFILE
-        rm -f ~/.bash_history
+        rm -f /root/bash_history
 
     - import_tasks: _disk_clean.yml
