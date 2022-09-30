@@ -4,7 +4,7 @@ output_dir   ?= $(abspath $(root_dir)/output)
 checksum_dir ?= $(abspath $(root_dir)/checksums)
 autoinst_dir ?= $(abspath $(scripts_dir)/autoinst)
 playbook_dir ?= $(abspath $(scripts_dir)/ansible)
-headless     ?= false
+headless     ?= true
 
 all: ubuntu-22-04
 

@@ -117,9 +117,14 @@ source "virtualbox-iso" "ubuntu-22-04" {
   output_directory     = var.output_directory
   vboxmanage = [
     ["modifyvm", "{{ .Name }}", "--audio", "pulse"],
+    ["modifyvm", "{{ .Name }}", "--audiocontroller", "hda"],
+    ["modifyvm", "{{ .Name }}", "--audioout", "on"],
+    ["modifyvm", "{{ .Name }}", "--boot1", "dvd"],
+    ["modifyvm", "{{ .Name }}", "--boot2", "disk"],
     ["modifyvm", "{{ .Name }}", "--pae", "off"],
     ["modifyvm", "{{ .Name }}", "--usb", "on"],
-    ["modifyvm", "{{ .Name }}", "--vram", "128"],
+    ["modifyvm", "{{ .Name }}", "--vram", "16"],
+    ["modifyvm", "{{ .Name }}", "--graphicscontroller", "vmsvga"],   
     ["modifyvm", "{{ .Name }}", "--vrde", "off"],
     ["modifyvm", "{{ .Name }}", "--nic1", "nat"],
     ["modifyvm", "{{ .Name }}", "--nictype1", "82540EM"],
