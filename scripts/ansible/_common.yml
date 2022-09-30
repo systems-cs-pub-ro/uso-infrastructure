@@ -2,11 +2,3 @@
   copy:
     content: "nameserver 1.1.1.1"
     dest: /etc/resolv.conf
-
-- name: Give the user sudo without password privileges
-  lineinfile:
-    path: /etc/sudoers
-    regexp: '#?\s*{{ ansible_user }}'
-    line: "{{ ansible_user }}\tALL=(ALL)\tNOPASSWD: ALL"
-    state: present
-    validate: /usr/sbin/visudo -cf %s
