@@ -114,7 +114,8 @@
     - name: Install i386 C development environment
       shell: |
         dpkg --add-architecture i386
-        apt install -y libc6:i386
+        apt update
+        apt install -y gcc-multilib libc6-i386
 
     - name: Add tmux configuration
       become: yes

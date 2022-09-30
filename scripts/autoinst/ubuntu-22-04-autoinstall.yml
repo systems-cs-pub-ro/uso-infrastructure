@@ -34,7 +34,6 @@ autoinstall:
     - vim
     - git
     - emacs
-    - gcc-multilib
     - ubuntu-desktop-minimal
     - tmux
     - firefox

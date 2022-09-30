@@ -94,7 +94,7 @@ source "virtualbox-iso" "ubuntu-22-04" {
   iso_checksum  = var.iso_checksum
   ssh_username  = var.username
   ssh_password  = var.password
-  ssh_timeout   = "30m"
+  ssh_timeout   = "60m"
    http_content = {
      "/user-data" = templatefile("scripts/autoinst/ubuntu-22-04-autoinstall.yml", {
        user = {
