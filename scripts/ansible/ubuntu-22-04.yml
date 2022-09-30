@@ -35,7 +35,7 @@
         git config --global user.name 'Student USO VM User'
         git config --global user.email 'student@stud.acs.upb.ro'
 
-    - name: [sudo] Configure Git
+    - name: Root - Configure Git
       shell: |
         git config --global color.ui auto
         git config --global user.name 'Root USO VM User'
@@ -63,7 +63,7 @@
         cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /home/student/.vimrc
         cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /home/student/.vim/
 
-    - name: Add aditional Vim configuration [sudo]
+    - name: Add aditional Vim configuration Root -
       shell: |
         mkdir -p /root/.vim/bkup
         cp ~/Documents/snippets.git/config/vim/vimrc_no_cscope /root/.vimrc
@@ -75,7 +75,7 @@
       command:
         cmd: cp /home/student/Documents/snippets.git/config/emacs/emacs-to-deploy.el /home/student/.emacs
 
-    - name: Add aditional Emacs configuration [sudo]
+    - name: Add aditional Emacs configuration Root -
       command:
         cmd: cp ~/Documents/snippets.git/config/emacs/emacs-to-deploy.el /root/.emacs
 
@@ -95,7 +95,7 @@
       command:
         cmd: cp /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd /home/student/.bash_aliases
     
-    - name: Add aditional Bash aliases [sudo]
+    - name: Add aditional Bash aliases Root -
       command:
         cmd: cp ~/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd /root/.bash_aliases
 
@@ -111,7 +111,7 @@
       command:
         cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf ~/.tmux.conf
     
-    - name: Add tmux configuration [sudo]
+    - name: Add tmux configuration Root -
       command:   
         cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf /root/.tmux.conf
     
@@ -171,7 +171,7 @@
         unset HISTFILE
         rm -f ~/.bash_history
  
-    - name: Clean command history [sudo]
+    - name: Clean command history Root -
       shell: |
         history -c
         unset HISTFILE
