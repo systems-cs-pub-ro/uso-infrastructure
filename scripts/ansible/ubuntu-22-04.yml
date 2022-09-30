@@ -85,7 +85,7 @@
       command:
         cmd: gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d \')/ cursor-blink-mode off
 
-    -name: Set collation to show capitalized names first
+    - name: Set collation to show capitalized names first
       command:
         cmd: update-locale LC_COLLATE=C
 
@@ -116,11 +116,11 @@
         cmd: cp ~/Documents/snippets.git/config/tmux/tmux_debian.conf /root/.tmux.conf
     
     - name: Update root password
-        user:
-          name: root
-          update_password: always
-          # python -c 'import crypt; print(crypt.crypt("root", "$1$NaCl$"))'
-          password: $1$NaCl$Mb6A.7Qvm5pyF/2OFUCum0
+      user:
+        name: root
+        update_password: always
+        # python -c 'import crypt; print(crypt.crypt("root", "$1$NaCl$"))'
+        password: $1$NaCl$Mb6A.7Qvm5pyF/2OFUCum0
 
     - name: Disable DNS usage in SSH server
       command:
@@ -128,7 +128,7 @@
 
     - name: Increase MaxAuthTries for ssh to 10
       command:
-        - cmd: sed -i 's/##MaxAuthTries 6/MaxAuthTries 10/g' /etc/ssh/sshd_config 
+        cmd: sed -i 's/##MaxAuthTries 6/MaxAuthTries 10/g' /etc/ssh/sshd_config 
 
     - name: Disable automated screen locking
       become: yes
@@ -143,10 +143,10 @@
         gsettings set org.gnome.shell favorite-apps "$(gsettings get org.gnome.shell favorite-apps | sed s/.$//), 'firefox.desktop']"
 
     - name: Set the timezone to 'Bucharest'
-          file:
-            src: /usr/share/zoneinfo/Europe/Bucharest
-            dest: /etc/localtime
-            state: link
+      file:
+        src: /usr/share/zoneinfo/Europe/Bucharest
+        dest: /etc/localtime
+        state: link
 
     - name: Update, upgrade and clean
       shell: |
