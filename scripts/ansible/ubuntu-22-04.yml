@@ -24,6 +24,15 @@
       apt:
         upgrade: full
 
+    - name: Install additional packages
+      apt:
+        pkg:
+          - emacs
+          - firefox
+          - ubuntu-desktop-minimal
+        state: latest
+        update_cache: true
+
     - name: Update grub configuration
       command: update-grub2
 

@@ -9,6 +9,19 @@ autoinstall:
   early-commands:
     - systemctl stop ssh
 
+  network:
+    network:
+      version: 2
+      ethernets:
+        enp0s3:
+          dhcp4: yes
+        enp0s8:
+          dhcp4: yes
+        eth0:
+          dhcp4: yes
+        eth1:
+          dhcp4: yes
+
   apt:
       preserve_sources_list: false
       primary:
@@ -33,10 +46,7 @@ autoinstall:
     - tar
     - vim
     - git
-    - emacs
-    - ubuntu-desktop-minimal
     - tmux
-    - firefox
 
   user-data:
     disable_root: true
