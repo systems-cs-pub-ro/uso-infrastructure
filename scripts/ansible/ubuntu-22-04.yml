@@ -149,7 +149,7 @@
 
     - name: Increase MaxAuthTries for ssh to 10
       command:
-        cmd: sed -i 's/##MaxAuthTries 6/MaxAuthTries 10/g' /etc/ssh/sshd_config 
+        cmd: sed -i 's/#MaxAuthTries 6/MaxAuthTries 10/g' /etc/ssh/sshd_config 
 
     - name: Disable automated screen locking
       become: yes
