@@ -36,3 +36,7 @@ To run custom build commands for debugging, run:
 ```bash
 packer build -var headless=false <packer_hcl_script>
 ```
+
+## References
+
+The scripts were inspired from this [repository](https://gitlab.cs.pub.ro/SCGC/packer/-/tree/master).
