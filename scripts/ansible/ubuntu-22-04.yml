@@ -1,40 +1,22 @@
 - name: Provision image
-  hosts: default
+  hosts: localhost
   become: true
 
   tasks:
-    - import_tasks: _common.yml
-
-    - name: Clean cloud-init artifacts
-      command:
-        cmd: cloud-init clean
-
-    - name: Purge the unnecessary packages
-      apt:
-        name:
-          - snapd
-          - linux-firmware
-          - linux-headers*
-          - cloud-init*
-        state: absent
-        purge: yes
-        autoremove: yes
-
     - name: Upgrade all packages
       apt:
         upgrade: full
 
-    - name: Install additional packages
-      apt:
-        pkg:
-          - emacs
-          - firefox
-          - ubuntu-desktop-minimal
-        state: latest
-        update_cache: true
-
     - name: Update grub configuration
       command: update-grub2
+
+    - name: Install required packages
+      apt:
+        pkg:
+          - git
+          - vim
+        state: latest
+        update_cache: true
 
     - name: Configure Git
       become: yes
@@ -53,18 +35,20 @@
     - name: Clone Razvan's scripts and configs in the Documents folder
       become: yes
       become_user: student
-      command:
-        cmd: git clone https://github.com/razvand/snippets /home/student/Documents/snippets.git
+      git:
+        repo: https://github.com/razvand/snippets
+        dest: /home/student/Documents/snippets.git
 
     - name: Make Vim default editor
       command:
         cmd: update-alternatives --set editor /usr/bin/vim.basic
 
     - name: Configure Vim globally
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /etc/vim/vimrc
+      copy:
+        src: /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope
+        dest: /etc/vim/vimrc
 
-    - name: Add aditional Vim configuration
+    - name: Add additional Vim configuration
       become: yes
       become_user: student
       shell: |
@@ -72,43 +56,31 @@
         cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /home/student/.vimrc
         cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /home/student/.vim/
 
-    - name: Add aditional Vim configuration Root -
+    - name: Root - Add additional Vim configuration
       shell: |
         mkdir -p /root/.vim/bkup
         cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /root/.vimrc
         cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /root/.vim/
 
-    - name: Add aditional Emacs configuration
-      become: yes
-      become_user: student
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/emacs/emacs-to-deploy.el /home/student/.emacs
-
-    - name: Add aditional Emacs configuration Root -
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/emacs/emacs-to-deploy.el /root/.emacs
-
     - name: Set collation to show capitalized names first
       command:
         cmd: update-locale LC_COLLATE=C
 
-    - name: Add aditional Bash aliases
+    - name: Add additional Bash aliases for student
       become: yes
       become_user: student
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd /home/student/.bash_aliases
-    
-    - name: Add aditional Bash aliases Root -
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd /root/.bash_aliases
+      copy:
+        src: /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd
+        dest: /home/student/.bash_aliases
+
+    - name: Add additional Bash aliases for root
+      copy:
+        src: /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd
+        dest: /root/.bash_aliases
 
     - name: Trim Bash prompt when too large
       command:
         cmd: echo -e '\nexport PROMPT_DIRTRIM=3' >> /etc/bash.bashrc
-
-    - name: Install minimal CLI Debian packages
-      command:
-        cmd: bash /home/student/Documents/snippets.git/debian/cli-minimal-debian-install
 
     - name: Install minimal GUI Debian packages
       apt:
@@ -117,24 +89,103 @@
           - xclip
           - scrot
           - shutter
+          - less
+          - htop
+          - zip
+          - unzip
+          - vim-nox
+          - git
+          - subversion
+          - lsof
+          - build-essential
+          - gdb
+          - cscope
+          - exuberant-ctags
+          - strace
+          - ltrace
+          - valgrind
+          - gawk
+          - bash-completion
+          - expect
+          - netcat
+          - telnet
+          - lynx
+          - curl
+          - ncftp
+          - host
+          - dnsutils
+          - openssh-server
+          - smbclient
+          - cifs-utils
+          - ldap-utils
+          - finger
+          - pciutils
+          - usbutils
+          - lshw
+          - mc
+          - tree
+          - apt-file
+          - genisoimage
+          - tcpdump
+          - nmap
+          - manpages-posix
+          - manpages-posix-dev
+          - make-doc
+          - glibc-doc-reference
+          - pwgen
+          - lshw
+          - inxi
+          - emacs
+          - org-mode
+          - emacs-goodies-el
+          - screen
+          - tmux
+          - tmux-plugin-manager
+          - ethtool
+          - net-tools
+          - imagemagick
+          - pdftk
+          - iotop
+          - sysstat
+          - unrar
+          - p7zip
+          - lzma
+          - xz-utils
+          - moreutils
+          - firefox
+          - gedit
+          - vlc
+          - libreoffice
+          - rhythmbox
+          - gnome-mines
         state: latest
         update_cache: true
 
-    - name: Install i386 C development environment
-      shell: |
-        dpkg --add-architecture i386
-        apt update
-        apt install -y gcc-multilib libc6-i386
+    - name: Add i386 architecture
+      command: dpkg --add-architecture i386
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - gcc-multilib
+          - libc6-i386
+        state: present
 
     - name: Add tmux configuration
       become: yes
       become_user: student
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf /home/student/.tmux.conf
+      copy:
+        src: /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf
+        dest: /home/student/.tmux.conf
 
-    - name: Add tmux configuration Root -
-      command:
-        cmd: cp /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf /root/.tmux.conf
+    - name: Add tmux configuration for root
+      copy:
+        src: /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf
+        dest: /root/.tmux.conf
 
     - name: Update root password
       user:
@@ -142,14 +193,6 @@
         update_password: always
         # python -c 'import crypt; print(crypt.crypt("root", "$1$NaCl$"))'
         password: $1$NaCl$Mb6A.7Qvm5pyF/2OFUCum0
-
-    - name: Disable DNS usage in SSH server
-      command:
-        cmd: sed -i 's/#UseDNS no/UseDNS no/g' /etc/ssh/sshd_config
-
-    - name: Increase MaxAuthTries for ssh to 10
-      command:
-        cmd: sed -i 's/#MaxAuthTries 6/MaxAuthTries 10/g' /etc/ssh/sshd_config 
 
     - name: Disable automated screen locking
       become: yes
@@ -174,15 +217,16 @@
        apt update
        apt upgrade
        apt dist-upgrade
-       apt clean 
+       apt clean
        apt autoclean
        apt autoremove
 
     - name: Clone USO repository
       become: yes
       become_user: student
-      command:
-        cmd: git clone https://github.com/systems-cs-pub-ro/uso-lab uso-lab.git
+      git:
+        repo: https://github.com/systems-cs-pub-ro/uso-lab
+        dest: ~/uso-lab.git
 
     - name: Clean command history
       become: yes
@@ -191,11 +235,9 @@
         history -c
         unset HISTFILE
         rm -f /home/student/bash_history
- 
-    - name: Clean command history Root -
+
+    - name: Root - Clean command history
       shell: |
         history -c
         unset HISTFILE
         rm -f /root/bash_history
-
-    - import_tasks: _disk_clean.yml
