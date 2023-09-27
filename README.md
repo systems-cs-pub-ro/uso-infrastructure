@@ -1,42 +1,17 @@
-# Test Packer
+# USO Virtual Machine
 
-This repository contains the scripts to generate VMs for USO.
+This repository containes instructions and scripts on how to build the virtual machine for USO.
 
-The VMs:
-* are based Ubuntu 22.04 Live Server;
-* `ubuntu-desktop-minimal` is installed and enabled;
-* are saved as  `.ova` (to import them either in VirtualBox or VMware);
+Currently the VM is based on Ubuntu Desktop 22.04.
 
-For Apple/M1 users the `ova` is exported into `.qcow2` and it
-can be launched with UTM or Qemu.   
+The VM is built using `vbox` and `ansible`.
 
-## Prerequisites
+## Notes
 
-Install `packer`, `ansible` and `sshpass`:
+A completely automates setup can be found under the branch `packer-setup`.
 
-```bash
-# Packer
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update && sudo apt-get install packer
-
-# Ansible
-sudo apt install ansible
-
-# sshpass
-sudo apt install sshpass
-```
-
-## Build VM
-
-We provided a Makefile to easy generate the VMs:
-
-To run custom build commands for debugging, run:
-
-```bash
-packer build -var headless=false <packer_hcl_script>
-```
+The limitation of that workflow is it cannot support Desktop versions, just Live Servers.
 
 ## References
 
-The scripts were inspired from this [repository](https://gitlab.cs.pub.ro/SCGC/packer/-/tree/master).
+The scripts and configs for the vm are based on the following [instructions](https://github.com/cs-pub-ro/lab-infrastructure/blob/master/install/uso-vm-actions.txt).

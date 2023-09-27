@@ -1,4 +1,0 @@
-- name: Set resolv.conf file
-  copy:
-    content: "nameserver 1.1.1.1"
-    dest: /etc/resolv.conf
