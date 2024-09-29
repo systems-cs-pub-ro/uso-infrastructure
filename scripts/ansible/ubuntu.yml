@@ -15,8 +15,42 @@
         pkg:
           - git
           - vim
+          - bzip2
+          - gcc
+          - make
+          - perl
         state: latest
         update_cache: true
+
+    - name: Remove snapd and related packages and prevent reinstallation
+      shell: |
+        apt autoremove --purge snapd
+        apt-mark hold snapd
+
+    - name: Add Mozilla team PPA for Firefox
+      apt_repository:
+        repo: ppa:mozillateam/ppa
+
+    - name: Set pin preferences for Mozilla Firefox
+      copy:
+        content: |
+          Package: *
+          Pin: release o=LP-PPA-mozillateam
+          Pin-Priority: 1001
+
+          Package: firefox
+          Pin: version 1:1snap*
+          Pin-Priority: -1
+        dest: /etc/apt/preferences.d/mozilla-firefox
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Firefox from apt
+      apt:
+        name: firefox
+        state: present
 
     - name: Configure Git
       become: yes
@@ -32,7 +66,7 @@
         git config --global user.name 'Root USO VM User'
         git config --global user.email 'student@stud.acs.upb.ro'
 
-    - name: Clone Razvan's scripts and configs in the Documents folder
+    - name: Clone useful scripts and configs in the Documents folder
       become: yes
       become_user: student
       git:
@@ -56,11 +90,23 @@
         cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /home/student/.vimrc
         cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /home/student/.vim/
 
+    - name: Append additional settings to .vimrc
+      become: yes
+      become_user: student
+      shell: |
+        echo "set nocompatible" >> /home/student/.vimrc
+        echo "set bs=2" >> /home/student/.vimrc
+
     - name: Root - Add additional Vim configuration
       shell: |
         mkdir -p /root/.vim/bkup
         cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /root/.vimrc
         cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /root/.vim/
+
+    - name: Append additional settings to .vimrc
+      shell: |
+        echo "set nocompatible" >> /root/.vimrc
+        echo "set bs=2" >> /root/.vimrc
 
     - name: Set collation to show capitalized names first
       command:
@@ -107,7 +153,7 @@
           - gawk
           - bash-completion
           - expect
-          - netcat
+          - netcat-traditional
           - telnet
           - lynx
           - curl
@@ -152,28 +198,18 @@
           - lzma
           - xz-utils
           - moreutils
-          - firefox
           - gedit
           - vlc
           - libreoffice
           - rhythmbox
           - gnome-mines
+          - gcc-multilib
+          - libc6-i386
         state: latest
         update_cache: true
 
     - name: Add i386 architecture
       command: dpkg --add-architecture i386
-
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Install required packages
-      apt:
-        name:
-          - gcc-multilib
-          - libc6-i386
-        state: present
 
     - name: Add tmux configuration
       become: yes
@@ -212,32 +248,38 @@
         dest: /etc/localtime
         state: link
 
-    - name: Update, upgrade and clean
-      shell: |
-       apt update
-       apt upgrade
-       apt dist-upgrade
-       apt clean
-       apt autoclean
-       apt autoremove
-
     - name: Clone USO repository
       become: yes
       become_user: student
       git:
         repo: https://github.com/systems-cs-pub-ro/uso-lab
-        dest: ~/uso-lab.git
+        dest: /home/student/uso-lab.git
 
-    - name: Clean command history
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+
+    - name: Clean apt cache
+      apt:
+        autoclean: yes
+
+    - name: Remove unnecessary packages
+      apt:
+        autoremove: yes
+
+    - name: Clean command history for student and root
+      shell: |
+        history -c
+        unset HISTFILE
+        rm -f {{ user_home }}/bash_history
       become: yes
-      become_user: student
-      shell: |
-        history -c
-        unset HISTFILE
-        rm -f /home/student/bash_history
-
-    - name: Root - Clean command history
-      shell: |
-        history -c
-        unset HISTFILE
-        rm -f /root/bash_history
+      become_user: "{{ item.user }}"
+      vars:
+        user_home: "{{ item.home }}"
+      loop:
+        - { user: 'student', home: '/home/student' }
+        - { user: 'root', home: '/root' }
