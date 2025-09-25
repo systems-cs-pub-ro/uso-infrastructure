@@ -1,0 +1,96 @@
+- name: Add Mozilla PPA
+  apt_repository:
+    repo: ppa:mozillateam/ppa
+    state: present
+    update_cache: true
+
+- name: Upgrade all packages
+  apt:
+    upgrade: full
+
+- name: Install additional packages
+  apt:
+    pkg:
+      - firefox
+      - nano
+      - tar
+      - emacs
+      - git
+      - vim
+      - bzip2
+      - gcc
+      - make
+      - perl
+      - xsel
+      - xclip
+      - scrot
+      - shutter
+      - less
+      - htop
+      - zip
+      - unzip
+      - git
+      - subversion
+      - lsof
+      - build-essential
+      - gdb
+      - cscope
+      - exuberant-ctags
+      - strace
+      - ltrace
+      - valgrind
+      - gawk
+      - bash-completion
+      - expect
+      - netcat-traditional
+      - telnet
+      - lynx
+      - curl
+      - ncftp
+      - host
+      - dnsutils
+      - smbclient
+      - cifs-utils
+      - ldap-utils
+      - finger
+      - pciutils
+      - usbutils
+      - lshw
+      - mc
+      - tree
+      - apt-file
+      - genisoimage
+      - tcpdump
+      - nmap
+      - manpages-posix
+      - manpages-posix-dev
+      - make-doc
+      - glibc-doc-reference
+      - pwgen
+      - lshw
+      - inxi
+      - emacs
+      - org-mode
+      - screen
+      - tmux
+      - tmux-plugin-manager
+      - ethtool
+      - net-tools
+      - imagemagick
+      - pdftk
+      - iotop
+      - sysstat
+      - unrar
+      - p7zip
+      - lzma
+      - xz-utils
+      - moreutils
+      - gedit
+      - vlc
+      - libreoffice
+      - rhythmbox
+      - gnome-mines
+      - gcc-multilib
+      - libc6-i386
+    state: latest
+    update_cache: true
