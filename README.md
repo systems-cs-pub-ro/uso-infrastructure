@@ -1,53 +1,44 @@
-# USO Virtual Machine
+# Build system for USO VMs
 
-This repository contains instructions and scripts on how to build the virtual machine for the USO course.
+This repository contains the build system used for generating USO VMs for labs and ctf.
 
-The VM is built using `vbox` and `ansible`.
+## Development guide
 
-## Steps
-1. Download the ISO for the LTS version of Ubuntu Desktop.
-2. Install `vbox` on your host.
-3. Create a new VM in `vbox` using the downloaded ISO. Note: you might need to increase CPU/RAM to speed up the installation.
-4. Run the `vbox` script to configure the VM.
-5. Install `ansible-core` on the VM.
-6. Install `openssh-server` on the VM.
-7. Install VirtualBox Guest Additions on the VM.
-8. `scp` the `ansible` playbook to the VM.
-9. Run the `ansible` playbook to install the necessary software.
-10. Clean up the VM:
-    * Remove the `ansible` playbook.
-    * Uninstall `ansible-core`.
-11. Export the VM as an `ova` file.
+### Prerequisites
 
-Useful commands:
+Install `packer` and `ansible` on your machine.
+
 ```bash
-# Install ansible-core
-sudo apt update
-sudo apt install ansible -y
+# Packer
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install packer
 
-# Install openssh-server
-sudo apt install openssh-server -y
-
-# Install VirtualBox Guest Additions
-sudo apt install build-essential dkms linux-headers-$(uname -r) -y
-sudo mount /dev/cdrom /media/cdrom
-sudo /media/cdrom/VBoxLinuxAdditions.run
-
-# Ansible commands
-ansible-playbook ubuntu.yml --syntax-check
-ansible-playbook ubuntu.yml
+# Ansible
+sudo apt install ansible
 ```
 
-## Notes
+### Technical Details
 
-### 2024 - 2025
+The lifecycle of building the VM is:
+- download the corresponding Ubuntu image and configure the VM resources using `packer`. All the configs are available in `ubuntu-*.pkr.hcl`.
+- allow installation leveraging `cloud-init` and the `autoinstall` feature from Ubuntu. The configuration available in the GUI installation wizard are available in `scripts/autoinst/ubuntu-*-autoinstall,yml`.
+- all the other config required for the USO lab environment are set using ansible. The scrips are available in `scripts/ansible/*.yml`
 
-* The VM is based on Ubuntu Desktop 24.04 - Download the ISO from [here](https://releases.ubuntu.com/24.04/).
+### How to Build the VM
 
-### 2023 - 2024
+A Makefile is availale for building the VM:
+```bash
+make
+```
 
-* The VM is based on Ubuntu Desktop 22.04 - Download the ISO from [here](https://releases.ubuntu.com/22.04/).
+For debugging purposes, start the build as following:
+
+```bash
+PACKER_LOG=1 packer build -var headless=false ubuntu-*-vbox.pkr.hcl
+```
 
 ## References
+The cookbook guid for configuring VMs are available at [the following link](https://github.com/cs-pub-ro/lab-infrastructure/blob/master/install/uso-vm-actions.txt).
 
-The scripts and configs for the vm are based on the following [instructions](https://github.com/cs-pub-ro/lab-infrastructure/blob/master/install/uso-vm-actions.txt).
+The scripts were inspired from [this repository](https://gitlab.cs.pub.ro/SCGC/packer).

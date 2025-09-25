@@ -1,0 +1,57 @@
+#cloud-config
+# https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
+autoinstall:
+  version: 1
+  refresh-installer:
+    update: true
+    channel: latest/edge
+  locale: en_US
+  keyboard:
+    layout: ro
+  timezone: Europe/Bucharest
+
+  network:
+    network:
+      version: 2
+      ethernets:
+        enp0s3:
+          dhcp4: yes
+        enp0s8:
+          dhcp4: yes
+        eth0:
+          dhcp4: yes
+        eth1:
+          dhcp4: yes
+
+  apt:
+    preserve_sources_list: false
+    mirror-selection:
+      primary:
+        - country-mirror
+        - uri: "http://archive.ubuntu.com/ubuntu"
+          arches: [i386, amd64]
+        - uri: "http://ports.ubuntu.com/ubuntu-ports"
+          arches: [s390x, arm64, armhf, powerpc, ppc64el, riscv64]
+    fallback: abort
+    geoip: true
+
+  drivers:
+    install: true
+  updates: all
+
+  storage:
+    layout:
+      name: direct
+
+  identity:
+    hostname: ${hostname}.local
+    username: ${user.username}
+    password: ${user.password}
+
+  ssh:
+    install-server: yes
+    allow-pw: true
+    authorized_keys: []
+
+  user-data:
+    disable_root: true
