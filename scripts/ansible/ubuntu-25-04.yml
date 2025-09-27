@@ -117,6 +117,8 @@
         gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend false
         gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'firefox.desktop','org.gnome.Terminal.desktop']"
 
+    - import_tasks: _ctf_challenges.yml
+
     - name: Clean command history for student and root
       shell: |
         history -c
