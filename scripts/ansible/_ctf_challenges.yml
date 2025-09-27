@@ -1,0 +1,78 @@
+# File start of the year
+- name: Ensure /usr/share/info/emacs-25 exists
+  file:
+    path: /usr/share/info/emacs-25
+    state: directory
+    mode: '0755'
+
+- name: Configure `file-start-of-the-year`
+  file:
+    path: /usr/share/info/emacs-25/README
+    state: touch
+    modification_time: "2019-01-01 00:00:00"
+    modification_time_format: "%Y-%m-%d %H:%M:%S"
+
+# Second disk
+# - name: Copy second-disk scripts
+#   copy:
+#     src: ctf/second-disk/
+#     dest: /tmp/second-disk/
+#     owner: root
+#     group: root
+#     mode: '0755'
+#     remote_src: no
+
+# - name: Run second-disk deploy script
+#   command:
+#     cmd: ./deploy
+#     chdir: /tmp/second-disk
+
+# - name: Clean second-disk scripts
+#   file:
+#     path: /tmp/second-disk
+#     state: absent
+
+# MySQL
+- name: Install MySQL server
+  apt:
+    name: mysql-server
+    state: present
+    update_cache: true
+
+- name: Ensure MySQL service is running
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Install MySQL Python library for Ansible
+  apt:
+    name:
+      - python3-pip
+      - python3-dev
+      - libmysqlclient-dev
+      - python3-pymysql
+    state: present
+
+- name: Create secret database
+  community.mysql.mysql_db:
+    name: secret
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  become: true
+
+- name: Create flag table
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_db: secret
+    query: |
+      CREATE TABLE IF NOT EXISTS flag (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          content VARCHAR(255)
+      );
+
+- name: Insert base64 flag
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_db: secret
+    query: INSERT INTO flag (content) VALUES ('VVNPNkVWRVJ7d2hhdF9zX2JlY29tZV9vZl9teV9zaGlwfQ==');
