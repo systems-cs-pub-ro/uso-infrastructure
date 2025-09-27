@@ -63,9 +63,14 @@ variable "img_name" {
   default = "USO 2025-2026"
 }
 
+variable "arch" {
+  type    = string
+  default = "amd64"
+}
+
 variable "output_directory" {
   type    = string
-  default = "output_arm64"
+  default = "output-arm64"
 }
 
 variable "checksum_directory" {
@@ -137,21 +142,21 @@ source "virtualbox-iso" "ubuntu-25-04" {
 build {
   sources = ["sources.virtualbox-iso.ubuntu-25-04"]
 
-  # provisioner "ansible" {
-  #   playbook_file    = "scripts/ansible/ubuntu-25-04.yml"
-  #   user             = var.username
-  #   use_proxy        = false
-  #   extra_arguments  = [
-  #     "--extra-vars", "ansible_password='${var.password}' ansible_become_pass='${var.password}'",
-  #   ]
-  # }
+  provisioner "ansible" {
+    playbook_file    = "scripts/ansible/ubuntu-25-04.yml"
+    user             = var.username
+    use_proxy        = false
+    extra_arguments  = [
+      "--extra-vars", "ansible_password='${var.password}' ansible_become_pass='${var.password}'",
+    ]
+  }
 
   post-processor "shell-local" {
-    inline = ["rm -f ${var.checksum_directory}/${var.img_name}.*"]
+    inline = ["rm -f ${var.checksum_directory}/${var.img_name}-${var.arch}.*"]
   }
 
   post-processor "checksum" {
     checksum_types = ["sha256", "sha512"]
-    output = "${var.checksum_directory}/${var.img_name}.{{.ChecksumType}}"
+    output = "${var.checksum_directory}/${var.img_name}-${var.arch}.{{.ChecksumType}}"
   }
 }

@@ -44,7 +44,7 @@ autoinstall:
       name: direct
 
   identity:
-    hostname: ${hostname}.local
+    hostname: ${hostname}
     username: ${user.username}
     password: ${user.password}
 
