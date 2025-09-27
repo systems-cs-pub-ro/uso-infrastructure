@@ -1,5 +1,5 @@
 - name: Provision image
-  hosts: default
+  hosts: all
   become: true
 
   tasks:
@@ -11,6 +11,8 @@
       apt:
         name:
           - snapd
+          - unattended-upgrades
+          - gnome-initial-setup
           - linux-firmware
           - linux-headers*
           - cloud-init*
@@ -19,10 +21,9 @@
         autoremove: yes
 
     - name: Prevent snap reinstallation
-      apt:
-        name:
-          -snapd
-        state: hold
+      dpkg_selections:
+        name: snapd
+        selection: hold
 
     - name: Update grub configuration
       command: update-grub2
@@ -56,63 +57,38 @@
         repo: https://github.com/systems-cs-pub-ro/uso-lab
         dest: /home/student/uso-lab.git
 
-    - name: Clone razvand useful repository
-      become: yes
-      become_user: student
-      git:
-        repo: https://github.com/razvand/snippets
-        dest: /home/student/Documents/snippets.git
-
-    - name: Make Vim default editor
+    - name: Make vim as default editor
       command:
         cmd: update-alternatives --set editor /usr/bin/vim.basic
 
-    - name: Configure Vim globally
+    - name: Ensure vim backup directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /home/student/.vim/backup
+        - /root/.vim/backup
+
+    - name: Configure vim globally
       copy:
-        src: /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope
-        dest: /etc/vim/vimrc
+        src: artefacts/.vimrc
+        dest: "{{ item }}"
+        mode: 0644
+      loop:
+        - /etc/vim/vimrc
+        - /root/.vimrc
 
-    - name: Add additional Vim configuration
-      become: yes
-      become_user: student
-      shell: |
-        mkdir -p /home/student/.vim/bkup
-        cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /home/student/.vimrc
-        cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /home/student/.vim/
-
-    - name: Append additional settings to .vimrc
-      become: yes
-      become_user: student
-      shell: |
-        echo "set nocompatible" >> /home/student/.vimrc
-        echo "set bs=2" >> /home/student/.vimrc
-
-    - name: Root - Add additional Vim configuration
-      shell: |
-        mkdir -p /root/.vim/bkup
-        cp /home/student/Documents/snippets.git/config/vim/vimrc_no_cscope /root/.vimrc
-        cp -r /home/student/Documents/snippets.git/config/vim/ftplugin/ /root/.vim/
-
-    - name: Append additional settings to .vimrc
-      shell: |
-        echo "set nocompatible" >> /root/.vimrc
-        echo "set bs=2" >> /root/.vimrc
+    - name: Configure vim for student
+      copy:
+        src: artefacts/.vimrc
+        dest: /home/student/.vimrc
+        owner: student
+        group: student
 
     - name: Set collation to show capitalized names first
       command:
         cmd: update-locale LC_COLLATE=C
-
-    - name: Add additional Bash aliases for student
-      become: yes
-      become_user: student
-      copy:
-        src: /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd
-        dest: /home/student/.bash_aliases
-
-    - name: Add additional Bash aliases for root
-      copy:
-        src: /home/student/Documents/snippets.git/config/bash/bash_aliases_deploy_systemd
-        dest: /root/.bash_aliases
 
     - name: Trim Bash prompt when too large
       command:
@@ -122,28 +98,24 @@
       command: dpkg --add-architecture i386
 
     - name: Add tmux configuration
-      become: yes
-      become_user: student
       copy:
-        src: /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf
+        src: artefacts/.tmux.conf
         dest: /home/student/.tmux.conf
+        mode: 0644
+        owner: student
+        group: student
 
     - name: Add tmux configuration for root
       copy:
-        src: /home/student/Documents/snippets.git/config/tmux/tmux_debian.conf
+        src: artefacts/.tmux.conf
         dest: /root/.tmux.conf
+        mode: 0644
 
-    - name: Disable automated screen locking
-      become: yes
-      become_user: student
+    - name: Configure gnome desktop
       shell: |
         gsettings set org.gnome.desktop.screensaver lock-enabled false
         gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend false
-
-    - name: Configure Favorites bar
-      shell: |
-        gsettings set org.gnome.shell favorite-apps "$(gsettings get org.gnome.shell favorite-apps | sed s/.$//), 'org.gnome.Terminal.desktop']"
-        gsettings set org.gnome.shell favorite-apps "$(gsettings get org.gnome.shell favorite-apps | sed s/.$//), 'firefox.desktop']"
+        gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'firefox.desktop','org.gnome.Terminal.desktop']"
 
     - name: Clean command history for student and root
       shell: |
