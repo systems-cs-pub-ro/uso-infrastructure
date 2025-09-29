@@ -60,7 +60,7 @@ variable "headless" {
 
 variable "img_name" {
   type    = string
-  default = "USO 2025-2026"
+  default = "USO"
 }
 
 variable "arch" {
