@@ -3,9 +3,11 @@
   become: true
 
   tasks:
+    - name: Check if cloud-init is installed
+      package_facts:
     - name: Clean cloud-init artifacts
-      command:
-        cmd: cloud-init clean
+      command: cloud-init clean
+      when: "'cloud-init' in ansible_facts.packages"
 
     - name: Purge unnecessary packages
       apt:
