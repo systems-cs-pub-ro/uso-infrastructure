@@ -65,7 +65,7 @@ variable "img_name" {
 
 variable "arch" {
   type    = string
-  default = "amd64"
+  default = "arm64"
 }
 
 variable "output_directory" {
