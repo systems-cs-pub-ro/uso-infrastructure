@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if test $UID -ne 0; then
+    echo "You must be root to run this script." 1>&2
+    exit 1
+fi
+
+test -b /dev/sdb > /dev/null 2>&1
+if test $? -ne 0; then
+    echo "/dev/sdb does not exist or is not a block device file." 1>&2
+    exit 1
+fi
+
+test -b /dev/sdb1 > /dev/null 2>&1
+if test $? -ne 0; then
+    echo 'start=2048, type=83' | sudo sfdisk /dev/sdb
+fi
+
+apt -y install hfsplus hfsprogs
+mkfs.hfsplus /dev/sdb1
+mkdir /mnt/sdb1
+mount /dev/sdb1 /mnt/sdb1
+cp flag /mnt/sdb1/
+umount /mnt/sdb1
+rm -fr /mnt/sdb1
+apt -y purge hfsplus hfsprogs
