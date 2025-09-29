@@ -121,6 +121,18 @@
         gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend false
         gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'firefox.desktop','org.gnome.Terminal.desktop']"
 
+    - name: Disable Wayland for GDM to force X11
+      become: yes
+      lineinfile:
+        path: /etc/gdm3/custom.conf
+        regexp: '^#?WaylandEnable='
+        line: 'WaylandEnable=false'
+        state: present
+
+    - name: Ensure GDM will use X11
+      become: yes
+      command: systemctl restart gdm3
+
     - import_tasks: _ctf_challenges.yml
 
     - name: Clean command history for student and root
