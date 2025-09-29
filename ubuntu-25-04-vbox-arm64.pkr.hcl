@@ -65,7 +65,7 @@ variable "img_name" {
 
 variable "arch" {
   type    = string
-  default = "amd64"
+  default = "arm64"
 }
 
 variable "output_directory" {
@@ -83,6 +83,10 @@ packer {
     virtualbox = {
       version = "~> 1"
       source  = "github.com/hashicorp/virtualbox"
+    }
+    ansible = {
+      version = "~> 1"
+      source = "github.com/hashicorp/ansible"
     }
   }
 }
