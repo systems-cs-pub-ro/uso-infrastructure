@@ -30,6 +30,8 @@
 
     - import_tasks: _install_packages.yml
 
+    - import_tasks: _install_vbox_guest_additions.yml
+
     - name: Update root password
       user:
         name: root
