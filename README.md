@@ -6,22 +6,18 @@ This repository contains the build system used for generating USO VMs for labs a
 
 ### Prerequisites
 
-Install `packer` and `ansible` on your machine.
+Install the following dependencies on your machine:
+- `packer`: https://developer.hashicorp.com/packer/install#linux
+- `ansible`: https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu
+
+Packer requires the following plugins to be installed:
 
 ```bash
-# Packer
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update && sudo apt-get install packer
-
 # Get Packer required plugins automatically
 packer init ubuntu-25-04-vbox-amd64.pkr.hcl
 # Or install them manually
 packer plugins install github.com/hashicorp/virtualbox
 packer plugins install github.com/hashicorp/ansible
-
-# Ansible
-sudo apt install ansible
 ```
 
 ### Technical Details
