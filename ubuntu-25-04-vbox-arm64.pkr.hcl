@@ -38,6 +38,11 @@ variable "disk_size" {
   default = 30000
 }
 
+variable "ctf_disk_size" {
+  type    = number
+  default = 10
+}
+
 variable "disk_format" {
   type    = string
   default = "ova"
@@ -110,6 +115,7 @@ source "virtualbox-iso" "ubuntu-25-04" {
    }
   shutdown_command     = "rm -rf ~/.ansible && echo '${var.password}' | sudo -S poweroff"
   disk_size            = var.disk_size
+  disk_additional_size = [ var.ctf_disk_size ]
   vm_name              = "${var.img_name}"
   format               = var.disk_format
   cpus                 = var.cpus
