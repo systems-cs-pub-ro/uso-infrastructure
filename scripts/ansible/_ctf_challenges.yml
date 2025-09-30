@@ -3,7 +3,7 @@
   file:
     path: /usr/share/info/emacs-25
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: Configure `file-start-of-the-year`
   file:
@@ -13,24 +13,24 @@
     modification_time_format: "%Y-%m-%d %H:%M:%S"
 
 # Second disk
-# - name: Copy second-disk scripts
-#   copy:
-#     src: ctf/second-disk/
-#     dest: /tmp/second-disk/
-#     owner: root
-#     group: root
-#     mode: '0755'
-#     remote_src: no
+- name: Copy second-disk scripts
+  copy:
+    src: ctf/second-disk/
+    dest: /tmp/second-disk/
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: no
 
-# - name: Run second-disk deploy script
-#   command:
-#     cmd: ./deploy
-#     chdir: /tmp/second-disk
+- name: Run second-disk deploy script
+  command:
+    cmd: ./deploy
+    chdir: /tmp/second-disk
 
-# - name: Clean second-disk scripts
-#   file:
-#     path: /tmp/second-disk
-#     state: absent
+- name: Clean second-disk scripts
+  file:
+    path: /tmp/second-disk
+    state: absent
 
 # MySQL
 - name: Install MySQL server
