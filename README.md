@@ -8,7 +8,7 @@ This repository contains the build system used for generating USO VMs for labs a
 
 Install the following dependencies on your machine:
 - `packer`: https://developer.hashicorp.com/packer/install#linux
-- `ansible`: https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu
+- `ansible`: https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-specific-operating-systems
 
 Packer requires the following plugins to be installed:
 
