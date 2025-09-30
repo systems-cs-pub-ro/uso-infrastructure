@@ -39,6 +39,8 @@ autoinstall:
     install: true
   updates: all
 
+  # for the detailed storage docs see the Curtin documentation
+  # https://curtin.readthedocs.io/en/latest/topics/storage.html
   storage:
     layout:
       name: direct
