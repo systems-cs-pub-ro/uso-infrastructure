@@ -3,9 +3,11 @@
   become: true
 
   tasks:
+    - name: Check if cloud-init is installed
+      package_facts:
     - name: Clean cloud-init artifacts
-      command:
-        cmd: cloud-init clean
+      command: cloud-init clean
+      when: "'cloud-init' in ansible_facts.packages"
 
     - name: Purge unnecessary packages
       apt:
@@ -29,6 +31,8 @@
       command: update-grub2
 
     - import_tasks: _install_packages.yml
+
+    - import_tasks: _install_vbox_guest_additions.yml
 
     - name: Update root password
       user:
@@ -116,6 +120,18 @@
         gsettings set org.gnome.desktop.screensaver lock-enabled false
         gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend false
         gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'firefox.desktop','org.gnome.Terminal.desktop']"
+
+    - name: Disable Wayland for GDM to force X11
+      become: yes
+      lineinfile:
+        path: /etc/gdm3/custom.conf
+        regexp: '^#?WaylandEnable='
+        line: 'WaylandEnable=false'
+        state: present
+
+    - name: Ensure GDM will use X11
+      become: yes
+      command: systemctl restart gdm3
 
     - import_tasks: _ctf_challenges.yml
 
