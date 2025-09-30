@@ -127,7 +127,7 @@ source "virtualbox-iso" "ubuntu-25-04" {
     ["modifyvm", "{{ .Name }}", "--vrde", "off"],
     ["modifyvm", "{{ .Name }}", "--nic1", "nat"],
     ["modifyvm", "{{ .Name }}", "--nic2", "hostonly"],
-    ["modifyvm", "{{ .Name }}", "--hostonlyadapter2", "vboxnet0"],
+    ["modifyvm", "{{ .Name }}", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter"],
     ["modifyvm", "{{ .Name }}", "--memory", "${var.memsize}"],
     ["modifyvm", "{{ .Name }}", "--cpus", "${var.cpus}"]
   ]
