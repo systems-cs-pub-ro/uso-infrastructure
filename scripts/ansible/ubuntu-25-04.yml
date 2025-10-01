@@ -98,9 +98,6 @@
       command:
         cmd: echo -e '\nexport PROMPT_DIRTRIM=3' >> /etc/bash.bashrc
 
-    - name: Add i386 architecture
-      command: dpkg --add-architecture i386
-
     - name: Add tmux configuration
       copy:
         src: artefacts/.tmux.conf

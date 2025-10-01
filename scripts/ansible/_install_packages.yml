@@ -113,6 +113,5 @@
       - libreoffice
       - rhythmbox
       - gnome-mines
-      - gcc-multilib
     state: latest
     update_cache: true
