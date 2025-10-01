@@ -37,7 +37,7 @@
 - name: Unmount Guest Additions ISO
   mount:
     path: /mnt/vbox
-    state: unmounted
+    state: absent
 
 - name: Remove uploaded ISO to save space
   file:
