@@ -39,9 +39,50 @@ autoinstall:
     install: true
   updates: all
 
+  # for the detailed storage docs see the Curtin documentation
+  # https://curtin.readthedocs.io/en/latest/topics/storage.html
   storage:
     layout:
       name: direct
+    config:
+      - type: disk
+        id: sda
+        match:
+          path: /dev/sda
+        ptable: gpt
+        grub_device: true
+
+      - type: partition
+        id: sda-bios
+        device: sda
+        size: 1M
+        flag: bios_grub
+
+      - type: partition
+        id: sda-root
+        device: sda
+        size: remaining
+
+      - type: format
+        id: sda-fs
+        volume: sda-root
+        fstype: ext4
+
+      - type: mount
+        device: sda-fs
+        path: /
+
+      - type: disk
+        id: sdb
+        match:
+          path: /dev/sdb
+        ptable: gpt
+        grub_device: false
+
+      - type: partition
+        id: sdb-root
+        device: sdb
+        size: remaining
 
   identity:
     hostname: ${hostname}
