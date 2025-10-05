@@ -156,7 +156,14 @@ build {
   }
 
   post-processor "shell-local" {
-    inline = ["rm -f ${var.checksum_directory}/${var.img_name}-${var.arch}.*"]
+    inline = [
+      "rm -f ${var.checksum_directory}/${var.img_name}-${var.arch}.*",
+      "mkdir tmp_ova",
+      "tar -xf ${var.output_directory}/${var.img_name}.ova -C tmp_ova",
+      "sed -i 's/vboxnet0/VirtualBox Host-Only Ethernet Adapter/g' tmp_ova/*.ovf",
+      "tar -cf ${var.output_directory}/${var.vm_name}-modified.ova tmp_ova",
+      "rm -rf tmp_ova",
+    ]
   }
 
   post-processor "checksum" {
