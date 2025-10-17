@@ -113,5 +113,6 @@
       - libreoffice
       - rhythmbox
       - gnome-mines
+      - locate
     state: latest
     update_cache: true
