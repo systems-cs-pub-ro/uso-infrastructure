@@ -8,6 +8,7 @@ from google.oauth2 import service_account
 # ========================
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 SERVICE_ACCOUNT_FILE = 'google-service-account.json'
+# TODO : Replace with your actual folder ID
 FOLDER_ID = '15cTNJzHrw1l4mxxFj_1QK25GGT9EQoFV'
 
 credentials = service_account.Credentials.from_service_account_file(
@@ -76,6 +77,7 @@ def process(spreadsheet_id, output_csv):
 # Main
 # ========================
 if __name__ == "__main__":
+    # TODO: Replace with your actual spreadsheet ID
     SPREADSHEET_ID = "1WXduOieXmje_rrPF7_UraE7_U1APiDbn8oI4xDeAT2o"
     OUTPUT_DIR = "./output"
     OUTPUT_CSV = "catalog.csv"
