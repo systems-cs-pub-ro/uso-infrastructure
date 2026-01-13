@@ -9,8 +9,16 @@
   file:
     path: /usr/share/info/emacs-25/README
     state: touch
+    access_time: "2019-01-01 00:00:00"
+    access_time_format: "%Y-%m-%d %H:%M:%S"
     modification_time: "2019-01-01 00:00:00"
     modification_time_format: "%Y-%m-%d %H:%M:%S"
+
+- name: Add content to `file-start-of-the-year`
+  copy:
+    content: "VVNPNEVWRVJ7bm9fb25lX3NoYWxsX2hhdmVfd2l0aF9pc19ibGFja19qYWNrX2xlZV9zfQ=="
+    dest: /usr/share/info/emacs-25/README
+    mode: '0644'
 
 # Second disk
 # - name: Copy second-disk scripts
