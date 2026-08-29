@@ -1,0 +1,99 @@
+#cloud-config
+# https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
+autoinstall:
+  version: 1
+  refresh-installer:
+    update: false
+  locale: en_US
+  keyboard:
+    layout: ro
+  timezone: Europe/Bucharest
+
+  network:
+    network:
+      version: 2
+      ethernets:
+        enp0s3:
+          dhcp4: yes
+        enp0s8:
+          dhcp4: yes
+        eth0:
+          dhcp4: yes
+        eth1:
+          dhcp4: yes
+
+  apt:
+    preserve_sources_list: false
+    mirror-selection:
+      primary:
+        - country-mirror
+        - uri: "http://archive.ubuntu.com/ubuntu"
+          arches: [i386, amd64]
+        - uri: "http://ports.ubuntu.com/ubuntu-ports"
+          arches: [s390x, arm64, armhf, powerpc, ppc64el, riscv64]
+    fallback: abort
+    geoip: true
+
+  drivers:
+    install: false
+  updates: security
+
+  # for the detailed storage docs see the Curtin documentation
+  # https://curtin.readthedocs.io/en/latest/topics/storage.html
+  storage:
+    config:
+      - type: disk
+        id: disk-main
+        match:
+          path: ${disk_main}
+        ptable: gpt
+        grub_device: true
+
+      - type: partition
+        id: part-esp
+        device: disk-main
+        size: 1024M
+        flag: boot
+        grub_device: true
+
+      - type: format
+        id: format-esp
+        volume: part-esp
+        fstype: fat32
+
+      - type: mount
+        id: mount-esp
+        device: format-esp
+        path: /boot/efi
+
+      - type: partition
+        id: part-root
+        device: disk-main
+        size: -1
+
+      - type: format
+        id: format-root
+        volume: part-root
+        fstype: ext4
+
+      - type: mount
+        id: mount-root
+        device: format-root
+        path: /
+
+  identity:
+    hostname: ${hostname}
+    username: ${user.username}
+    password: ${user.password}
+
+  ssh:
+    install-server: yes
+    allow-pw: true
+    authorized_keys: []
+
+  user-data:
+    disable_root: true
+
+  late-commands:
+    - echo '${user.username} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/${user.username}
+    - chmod 0440 /target/etc/sudoers.d/${user.username}
