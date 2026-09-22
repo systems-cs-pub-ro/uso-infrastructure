@@ -20,12 +20,12 @@ variable "iso_name" {
 
 variable "cpus" {
   type    = number
-  default = 2
+  default = 4
 }
 
 variable "memsize" {
   type    = number
-  default = 4096
+  default = 8192
 }
 
 variable "disk_size" {
@@ -40,12 +40,12 @@ variable "ctf_disk_size" {
 
 variable "qemu_accelerator" {
   type    = string
-  default = "tcg"
+  default = "hvf"
 }
 
 variable "firmware" {
   type    = string
-  default = "/usr/share/AAVMF/AAVMF_CODE.fd"
+  default = "/opt/homebrew/share/qemu/edk2-aarch64-code.fd"
 }
 
 variable "disk_format" {
@@ -111,10 +111,12 @@ source "qemu" "ubuntu-26-04-1-aarch64" {
   accelerator          = var.qemu_accelerator
   machine_type         = "virt"
   qemuargs = [
-    ["-machine", "virt"],
-    ["-cpu", "cortex-a57"],
+    ["-machine", "virt,accel=hvf"],
+    ["-cpu", "host"],
     ["-bios", var.firmware],
+    ["-device", "virtio-gpu-pci"],
     ["-device", "qemu-xhci"],
+    ["-device", "usb-kbd"],
     ["-device", "usb-tablet"],
     ["-serial", "stdio"],
     ["-boot", "order="]
@@ -148,12 +150,12 @@ source "qemu" "ubuntu-26-04-1-aarch64" {
 
   boot_command         = [
     "c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ console=ttyAMA0,115200 console=tty1 net.ifnames=0 ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ console=ttyAMA0,115200 console=tty1 net.ifnames=0 systemd.mask=pd-mapper.service systemd.mask=qrtr-ns.service ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
 
-  boot_wait = "5s"
+  boot_wait = "30s"
 }
 
 build {

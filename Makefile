@@ -10,10 +10,10 @@ all: qcow2
 qcow2: qemu-amd64 qemu-aarch64
 
 qemu-amd64: ubuntu-26-04-1-qemu-amd64.pkr.hcl
-	packer build -var headless=$(headless) $<
+	PACKER_LOG=1  packer build -var headless=$(headless) $<
 
 qemu-aarch64: ubuntu-26-04-1-qemu-aarch64.pkr.hcl
-	packer build -var headless=$(headless) $<
+	PACKER_LOG=1  packer build -var headless=$(headless) $<
 
 qcow2-amd64: qemu-amd64
 qcow2-aarch64: qemu-aarch64
