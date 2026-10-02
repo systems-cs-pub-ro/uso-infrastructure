@@ -1,4 +1,7 @@
+import argparse
 import csv
+import os
+import sys
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
@@ -7,7 +10,7 @@ from google.oauth2 import service_account
 # ========================
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 SERVICE_ACCOUNT_FILE = 'google-service-account.json'
-FOLDER_ID = '15cTNJzHrw1l4mxxFj_1QK25GGT9EQoFV'
+FOLDER_ID = os.environ.get('FOLDER_ID', '')
 
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES
@@ -158,8 +161,13 @@ def write_header_and_students(spreadsheet_id, header, sheet_name, students_rows)
 # ========================
 # CSV Parsing and Data Grouping
 # ========================
-def load_participants(csv_path):
-    groups = {'CA': [], 'CB': [], 'CC': [], 'CD': [], 'AC': [], 'Altii': []}
+def load_participants(csv_path, sheet_names):
+    """
+    Group participants by sheet. A participant goes to the first sheet whose
+    name is contained in their Grupa; the last sheet is the catch-all.
+    """
+    groups = {name: [] for name in sheet_names}
+    fallback = sheet_names[-1]
     with open(csv_path, encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -168,18 +176,7 @@ def load_participants(csv_path):
             grupa = row['Grupa']
 
             # Determine which sheet they belong to
-            if 'CA' in grupa:
-                group = 'CA'
-            elif 'CB' in grupa:
-                group = 'CB'
-            elif 'CC' in grupa:
-                group = 'CC'
-            elif 'CD' in grupa:
-                group = 'CD'
-            elif 'AC' in grupa:
-                group = 'AC'
-            else:
-                group = 'Altii'
+            group = next((name for name in sheet_names[:-1] if name in grupa), fallback)
 
             groups[group].append([full_name, email, grupa] + [""] * 14)  # total 17 columns
     for group in groups:
@@ -197,13 +194,40 @@ def load_participants(csv_path):
 # ========================
 # Main
 # ========================
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Generate a Google Spreadsheet gradebook from a participants CSV."
+    )
+    parser.add_argument(
+        "--file",
+        default="03-ACS-L-CTI-Calculatoare-A2-S1-SO-CA-CB-CC-CD Grades-20261002_1520-comma_separated.csv",
+        help="Path to the participants CSV file (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--title",
+        default="SO 2025-2026 - Catalog - Laboratoare",
+        help="Title of the spreadsheet to create (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--series",
+        nargs="+",
+        default=["CA", "CB", "CC", "CD", "Altii"],
+        help="Sheets to create; students are assigned to the first sheet whose name "
+             "appears in their Grupa, the last sheet is the catch-all (default: %(default)s)",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    csv_file = "participants.csv"
-    spreadsheet_title = "USO 2025-2026 - Catalog - Laboratoare"
+    args = parse_args()
+    if not FOLDER_ID:
+        sys.exit("FOLDER_ID environment variable is not set")
+
+    file = args.file
+    spreadsheet_title = args.title
+    sheet_names = args.series
 
     spreadsheet_id = create_spreadsheet_in_folder(spreadsheet_title, FOLDER_ID)
-
-    sheet_names = ["CA", "CB", "CC", "CD", "AC", "Altii"]
     create_sheets(spreadsheet_id, sheet_names)
 
     header = [
@@ -213,7 +237,7 @@ if __name__ == "__main__":
         "Laborator 09", "Laborator 10", "Laborator 11", "Laborator 12"
     ]
 
-    grouped_students = load_participants(csv_file)
+    grouped_students = load_participants(file, sheet_names)
 
     for sheet_name in sheet_names:
         students_rows = grouped_students.get(sheet_name, [])

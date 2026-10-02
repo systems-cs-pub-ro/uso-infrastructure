@@ -216,4 +216,5 @@ __marimo__/
 .streamlit/secrets.toml
 
 google-service-account.json
-participants.csv
+*.json
+*.csv
