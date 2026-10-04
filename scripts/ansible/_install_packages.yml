@@ -114,5 +114,10 @@
       - rhythmbox
       - gnome-mines
       - locate
+      - thunderbird
+      - iotop
+      - sysstat
+      - docker.io
+      - docker-compose
     state: latest
     update_cache: true

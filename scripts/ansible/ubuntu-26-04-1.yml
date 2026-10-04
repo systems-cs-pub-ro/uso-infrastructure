@@ -1,0 +1,2 @@
+---
+- import_playbook: ubuntu-25-04.yml
